@@ -315,7 +315,9 @@ key client1.key
 ns-cert-type server
 ```
 
-There needs to be ...
+There needs to be `ca.crt`, `client1.crt` and `client1.key`.
+
+The certificates are created using `easy-rsa`.
 
 ## Mailserver
 
