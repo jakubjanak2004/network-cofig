@@ -363,3 +363,62 @@ auth_mechanisms = plain login
 > 📝 Make sure to `start` and `enable` postfix and dovecot.
 
 ## Monitoring system
+
+I am using `nagios` and ... for monitoring other systems.
+
+Install nagios:
+```bash
+sudo apt install nagios4
+```
+
+Add `myhosts.cfg` and `services.cfg` file into the `/etc/nagios4/nagios.cfg` files:
+```cfg
+cfg_file=/etc/nagios4/objects/myhosts.cfg
+cfg_file=/etc/nagios4/objects/services.cfg
+```
+
+Create `/etc/nagios4/objects/myhosts.cfg` and define hosts:
+```cfg
+define host {
+        use generic-host
+        host_name test
+        alias VM Test
+        address test
+        check_command   check-host-alive
+
+        max_check_attempts      2
+        check_interval  1
+        retry_interval  1
+        check_period    24x7
+        contact_groups  admins
+        notification_options d,u,r
+}
+```
+
+Add `check_nrpe` command into `/etc/nagios4/objects/commands.cfg`:
+```cfg
+define command {
+    command_name    check_nrpe
+    command_line    /usr/lib/nagios/plugins/check_nrpe -H $HOSTADDRESS$ -c $ARG1$
+}
+```
+
+Define service in `/etc/nagios4/objects/services.cfg`:
+```cfg
+
+```
+
+On the client download the nrpe and configure:
+```bash
+sudo apt install -y nagios-nrpe-server monitoring-plugins
+```
+
+Add allowed hosts in `/etc/nagios/nrpe.cfg`:
+```cfg
+allowed_hosts=127.0.0.1,...
+```
+
+To test the configurations, debug the issues:
+```bash
+sudo nagios4 -v /etc/nagios4/nagios.cfg
+```
