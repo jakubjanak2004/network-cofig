@@ -321,4 +321,45 @@ The certificates are created using `easy-rsa`.
 
 ## Mailserver
 
+Implementing mailserver using the `postfix` and `dovecot`.
+
+Install postfix and dovecot:
+```bash
+sudo apt install postfix
+sudo apt install dovecot-core dovecot-imapd dovecot-pop3d
+```
+
+### Postfix configuration
+```cnf
+smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+myhostname = test
+mydomain = test
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+mydestination = $myhostname, test, localhost.$mydomain, localhost
+relayhost =
+
+mynetworks = 127.0.0.0/8 192.168.10.0/24
+home_mailbox = Maildir/
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = all
+```
+
+### Dovecot configuration
+
+Make sure `/etc/dovecot/conf.d/10-mail.conf` has these:
+```cnf
+mail_location = maildir:~/Maildir
+```
+
+Make sure `/etc/dovecot/conf.d/10-auth.conf` has these:
+```cnf
+disable_plaintext_auth = no
+auth_mechanisms = plain login
+```
+
+> 📝 Make sure to `start` and `enable` postfix and dovecot.
+
 ## Monitoring system
