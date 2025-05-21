@@ -422,3 +422,35 @@ To test the configurations, debug the issues:
 ```bash
 sudo nagios4 -v /etc/nagios4/nagios.cfg
 ```
+
+Set the conact and mail notification:
+
+In `/etc/nagios4/objects/contacts.cfg` ensure that following is set:
+```cfg
+define contact {
+    contact_name            nagiosadmin
+    alias                   Nagios Admin
+    service_notification_period    24x7
+    host_notification_period       24x7
+    service_notification_options   w,u,c,r
+    host_notification_options      d,u,r
+    service_notification_commands  notify-service-by-email
+    host_notification_commands     notify-host-by-email
+    email                   your_email@example.com      # <=== Change this to your email address
+}
+
+define contactgroup {
+    contactgroup_name       admins
+    alias                   Nagios Administrators
+    members                 nagiosadmin    # <=== make sure this is set
+}
+```
+
+In `/etc/nagios4/objects/myhosts.cfg` ensure that host has a contact group:
+```cfg
+define host {
+    name                            generic-host
+    contact_groups                  admins    # <=== make sure this is set
+    ...
+}
+```
